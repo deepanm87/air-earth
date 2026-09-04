@@ -39,7 +39,7 @@ export function SiteHeader() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <Link className={styles.callsign} href="/" aria-label="AirEarth home">
+        <Link className={styles.brand} href="/" aria-label="AirEarth home">
           <span className={styles.callsign} aria-hidden="true">
             AE<span>/</span>
           </span>
@@ -96,7 +96,12 @@ export function SiteHeader() {
 
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
-            <button className={styles.menuButton} type="button" aria-label="Open navigation menu">
+            <button
+              className={styles.menuButton}
+              type="button"
+              aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={open}
+            >
               <MenuIcon />
               <span>Menu</span>
             </button>
@@ -108,7 +113,7 @@ export function SiteHeader() {
             showCloseButton={false}
           >
             <SheetHeader className={styles.mobilePanelHeader}>
-              <SheetTitle className={styles.mobilePlanTitle}>Navigate</SheetTitle>
+              <SheetTitle className={styles.mobilePanelTitle}>Navigate</SheetTitle>
               <SheetClose asChild>
                 <button className={styles.mobileClose} type="button" aria-label="Close navigation menu">
                   <CloseIcon />

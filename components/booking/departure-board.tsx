@@ -25,13 +25,7 @@ const ROUTES = [
   }
 ] as const
 
-const ROUTE_LABELS = ROUTES.map(({ from, to }) => 
-  `${from} → ${to}`.slice(0, ROUTE_LENGTH).padEnd(ROUTE_LENGTH, " ")
-)
-
-const ROUTE_CHARACTERS = Array.from({ length: ROUTE_LENGTH }, (_, index) => 
-[...new Set(["", ...ROUTE_LABELS.map(label => label[index])])].join("")
-)
+const BOARD_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 :→-"
 
 function subscribeToReducedMotion(onStoreChange: () => void) {
   const media = window.matchMedia("(prefers-reduced-motion: reduce)")
@@ -135,7 +129,7 @@ export function DepartureBoard() {
           <SplitFlapText 
             value={routeLabel}
             length={ROUTE_LENGTH}
-            characters={ROUTE_CHARACTERS}
+            characters={BOARD_CHARACTERS}
             reducedMotion={reducedMotion}
             onFullyFlipped={() => setSettled(true)}
           />

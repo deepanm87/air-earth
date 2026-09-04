@@ -68,14 +68,14 @@ function keepFocusInsideMobileSheet(event: ReactKeyboardEvent<HTMLDivElement>) {
 }
 
 const LazyConciergeChat = dynamic(
-  () => import("@/components/concierge/concierge-chat").then(module => module.conciergeChat),
+  () => import("@/components/concierge/concierge-chat").then(module => module.ConciergeChat),
   {
     ssr: false,
     loading: () => (
-      <div className="concierge-dock-loading" role="status">
+      <output className="concierge-dock-loading">
         <span />
         Opening...
-      </div>
+      </output>
     )
   }
 )
@@ -122,7 +122,12 @@ export function ConciergeDock() {
   }, [])
 
   return (
-    <Sheet modal={false} open={open} onOpenChange={handleOpenChange}>
+    <Sheet
+      modal={false}
+      disablePointerDismissal
+      open={open}
+      onOpenChange={handleOpenChange}
+    >
       <div id="concierge" className="concierge-dock" data-state={open ? "open" : "closed"}>
         <SheetTrigger asChild>
           <button
@@ -151,18 +156,8 @@ export function ConciergeDock() {
         data-visibility={open ? "visible" : "hidden"}
         data-has-opened={hasOpened ? "true" : "false"}
         aria-hidden={!open}
-        aria-model={isMobileViewport ? true : undefined}
         inert={open ? undefined : true}
-        onInteractOutside={event => event.preventDefault()}
         onKeyDown={isMobileViewport ? keepFocusInsideMobileSheet : undefined}
-        onCloseAutoFocus={event => {
-          event.preventDefault()
-          window.requestAnimationFrame(() => {
-            if (triggerRef.current?.isConnected) {
-              triggerRef.current.focus()
-            }
-          })
-        }}
       >
         <SheetHeader className="concierge-dock-header">
           <div className="concierge-dock-brand">

@@ -1,10 +1,9 @@
 import { ClerkProvider } from "@clerk/nextjs"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
-/*import { ConciergeDock } from "@/components/concierge/concierge-dock" */
+import { ConciergeDock } from "@/components/concierge/concierge-dock"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
-import "./globals.css"
 
 export const metadata: Metadata = {
   title: {
@@ -59,6 +58,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
       <div className="site-shell">
         <SiteHeader />
         {children}
+        <ConciergeDock />
         <SiteFooter />
       </div>
     </ClerkProvider>
