@@ -4,14 +4,15 @@ import { SplitFlapDisplay } from "@daformat/react-split-flap-display"
 import { useEffect, useState, useSyncExternalStore } from "react"
 import styles from "./booking-hero.module.css"
 
-const ROUTE_LENGTH = 14
+const CITY_LENGTH = 6
+const CITY_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "
 
 const ROUTES = [
-  { 
+  {
     from: "LONDON",
     to: "PARIS"
   },
-  { 
+  {
     from: "DUBAI",
     to: "LONDON"
   },
@@ -24,8 +25,6 @@ const ROUTES = [
     to: "DUBAI"
   }
 ] as const
-
-const BOARD_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 :→-"
 
 function subscribeToReducedMotion(onStoreChange: () => void) {
   const media = window.matchMedia("(prefers-reduced-motion: reduce)")
@@ -75,7 +74,7 @@ function SplitFlapText({
       <span aria-hidden="true" className={styles.staticFlap}>
         {[...normalized].map((character, index) => (
           <span key={`${index}-${character}`} data-character={character}>
-            {character === " " ? "/u00a0" : character}
+            {character === " " ? "\u00a0" : character}
           </span>
         ))}
       </span>
@@ -83,16 +82,28 @@ function SplitFlapText({
   }
 
   return (
-    <SplitFlapDisplay.Root 
+    <SplitFlapDisplay.Root
       aria-hidden="true"
       className={styles.flap}
       value={normalized}
       length={length}
       characters={characters}
-      flipDuration={540}
+      flipDuration={420}
       crease={1}
       onFullyFlipped={onFullyFlipped}
-    />
+    >
+      {(index, slotCharacters, currentCharacter, onSlotFullyFlipped) => (
+        <SplitFlapDisplay.Slot
+          key={index}
+          index={index}
+          characters={slotCharacters}
+          currentCharacter={currentCharacter}
+          onFullyFlipped={onSlotFullyFlipped}
+          className={styles.flapSlot}
+          style={{ placeContent: "stretch" }}
+        />
+      )}
+    </SplitFlapDisplay.Root>
   )
 }
 
@@ -100,16 +111,18 @@ export function DepartureBoard() {
   const reducedMotion = useReducedMotion()
   const [activeIndex, setActiveIndex] = useState(0)
   const [paused, setPaused] = useState(false)
-  const [settled, setSettled] = useState(false)
+  const [fromSettled, setFromSettled] = useState(false)
+  const [toSettled, setToSettled] = useState(false)
   const route = ROUTES[activeIndex]
-  const routeLabel = `${route.from} → ${route.to}`
+  const settled = fromSettled && toSettled
 
   useEffect(() => {
     if (reducedMotion || paused || !settled) {
       return
     }
     const timer = window.setTimeout(() => {
-      setSettled(false)
+      setFromSettled(false)
+      setToSettled(false)
       setActiveIndex(current => (current + 1) % ROUTES.length)
     }, 4_600)
     return () => window.clearTimeout(timer)
@@ -126,12 +139,20 @@ export function DepartureBoard() {
 
       <div className={styles.boardStage} aria-hidden="true">
         <div className={styles.boardPerspective}>
-          <SplitFlapText 
-            value={routeLabel}
-            length={ROUTE_LENGTH}
-            characters={BOARD_CHARACTERS}
+          <SplitFlapText
+            value={route.from}
+            length={CITY_LENGTH}
+            characters={CITY_CHARACTERS}
             reducedMotion={reducedMotion}
-            onFullyFlipped={() => setSettled(true)}
+            onFullyFlipped={() => setFromSettled(true)}
+          />
+          <span className={styles.routeArrow}>→</span>
+          <SplitFlapText
+            value={route.to}
+            length={CITY_LENGTH}
+            characters={CITY_CHARACTERS}
+            reducedMotion={reducedMotion}
+            onFullyFlipped={() => setToSettled(true)}
           />
         </div>
       </div>
